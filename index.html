@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream League Live</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#00ff88;--blue:#00d4ff;--orange:#ff6b1a;--red:#ff2d55;--gold:#ffd700;
+  --bg:#05070f;--card:#0d1526;--glass:rgba(13,21,38,0.8);
+  --border:rgba(0,255,136,0.15);--glow:rgba(0,255,136,0.3);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg);color:#e8f4ff;
+  min-height:100vh;overflow-x:hidden;
+}
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#0a0d18}
+::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.4);border-radius:3px}
+
+/* ── LOADER ── */
+#loader{
+  position:fixed;inset:0;background:var(--bg);z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .5s,visibility .5s;
+}
+#loader.gone{opacity:0;visibility:hidden}
+.ld-title{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;letter-spacing:6px;
+  background:linear-gradient(90deg,var(--green),var(--blue));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.ld-bar{width:200px;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.ld-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));
+  border-radius:2px;animation:ldFill 1.5s ease forwards}
+@keyframes ldFill{from{width:0}to{width:100%}}
+.ld-txt{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:#4a5a6a;letter-spacing:3px;
+  animation:blink 1.2s infinite}
+
+/* ── BACKGROUND ── */
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,255,136,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,136,.018) 1px,transparent 1px);
+  background-size:55px 55px;
+}
+.bg-glow{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%,rgba(0,255,136,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%,rgba(0,212,255,.05) 0%,transparent 60%);
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:64px;
+  display:flex;align-items:center;justify-content:space-between;padding:0 36px;
+  background:rgba(5,7,15,.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-brand{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--green),var(--blue));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:6px}
+.nav-a{
+  padding:7px 18px;text-decoration:none;color:#6a7a8a;
+  font-size:.85rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  border-radius:7px;transition:.2s;
+}
+.nav-a:hover{color:#e8f4ff;background:rgba(255,255,255,.05)}
+.nav-admin{color:var(--orange);border:1px solid rgba(255,107,26,.3)}
+.nav-admin:hover{background:rgba(255,107,26,.12)!important;border-color:var(--orange)}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:100px 20px 60px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;margin-bottom:28px;
+  padding:5px 16px;border-radius:100px;
+  background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);
+  font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:2px;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+.hero h1{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(2.6rem,7vw,5.5rem);font-weight:900;line-height:1.05;
+  letter-spacing:-1px;margin-bottom:10px;text-transform:uppercase;
+}
+.hero h1 .g{
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-family:'Orbitron',sans-serif;font-size:clamp(.9rem,2vw,1.3rem);
+  font-weight:700;color:var(--orange);letter-spacing:6px;text-transform:uppercase;margin-bottom:20px;
+}
+.hero-desc{max-width:520px;font-size:1rem;color:#7a8a9a;line-height:1.8;margin-bottom:48px}
+
+/* ── SHARE BUTTON ── */
+#btn-share{
+  position:relative;display:inline-flex;align-items:center;gap:12px;
+  padding:18px 52px;font-family:'Orbitron',sans-serif;
+  font-size:1.1rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:#03080f;background:linear-gradient(135deg,var(--green),#00cc6a);
+  border:none;border-radius:14px;cursor:pointer;
+  box-shadow:0 0 40px rgba(0,255,136,.35),0 8px 30px rgba(0,0,0,.5);
+  transition:.25s cubic-bezier(.4,0,.2,1);outline:none;
+}
+#btn-share:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 0 60px rgba(0,255,136,.5),0 16px 40px rgba(0,0,0,.6)}
+#btn-share:active{transform:translateY(0) scale(.99)}
+#btn-share.stopping{background:linear-gradient(135deg,var(--red),#cc1133);
+  box-shadow:0 0 40px rgba(255,45,85,.4),0 8px 30px rgba(0,0,0,.5)}
+#btn-share svg{width:22px;height:22px;flex-shrink:0}
+
+/* ── SESSION CARD ── */
+#session-card{
+  display:none;margin-top:36px;width:100%;max-width:520px;
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid rgba(0,255,136,.35);border-radius:20px;
+  padding:30px;box-shadow:0 0 40px rgba(0,255,136,.12),0 16px 40px rgba(0,0,0,.5);
+  animation:fadeUp .4s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.live-tag{
+  display:inline-flex;align-items:center;gap:7px;margin-bottom:18px;
+  padding:4px 14px;border-radius:100px;
+  background:rgba(255,45,85,.12);border:1px solid rgba(255,45,85,.35);
+  font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--red);letter-spacing:2px;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.7);opacity:.4}}
+.sc-label{font-size:.8rem;color:#5a6a7a;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.sc-link-row{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+.sc-link{
+  flex:1;padding:11px 14px;
+  background:rgba(0,0,0,.4);border:1px solid rgba(0,212,255,.2);border-radius:9px;
+  font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--blue);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#btn-copy{
+  padding:10px 18px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);
+  border-radius:9px;color:var(--green);font-family:'Share Tech Mono',monospace;
+  font-size:.72rem;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:1px;white-space:nowrap;
+}
+#btn-copy:hover{background:rgba(0,255,136,.22)}
+#btn-copy.ok{color:var(--blue);border-color:var(--blue)}
+.sc-warn{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:14px;
+  background:rgba(255,107,26,.08);border:1px solid rgba(255,107,26,.25);border-radius:9px;
+  font-size:.85rem;color:var(--orange);
+}
+#sc-timer{
+  font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:700;
+  color:var(--green);text-align:center;letter-spacing:5px;
+}
+
+/* ── FEATURES ── */
+.section{position:relative;z-index:1;padding:70px 40px;max-width:1080px;margin:0 auto}
+.sec-eyebrow{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:#3a4a5a;
+  letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:14px}
+.sec-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:900;
+  text-align:center;text-transform:uppercase;letter-spacing:2px;margin-bottom:50px;
+}
+.sec-title .g{background:linear-gradient(90deg,var(--green),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.feat-card{
+  background:var(--glass);backdrop-filter:blur(12px);
+  border:1px solid var(--border);border-radius:16px;padding:28px;
+  transition:.25s;position:relative;overflow:hidden;
+}
+.feat-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,255,136,.04),transparent);opacity:0;transition:.25s}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(0,255,136,.3);
+  box-shadow:0 0 30px rgba(0,255,136,.1)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:16px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
+.feat-card h3{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.feat-card p{font-size:.88rem;color:#6a7a8a;line-height:1.7}
+
+/* ── LEADERBOARD ── */
+.lb-wrap{
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:20px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.lb-top{
+  padding:24px 30px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(0,0,0,.25);
+}
+.lb-top h2{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--gold),var(--orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lb-top p{font-size:.8rem;color:#4a5a6a;margin-top:3px}
+.lb-cols{
+  display:grid;grid-template-columns:72px 1fr 60px 110px;gap:12px;
+  padding:12px 30px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-family:'Share Tech Mono',monospace;font-size:.68rem;color:#3a4a5a;
+  letter-spacing:2px;text-transform:uppercase;background:rgba(0,0,0,.15);
+}
+.lb-body{max-height:500px;overflow-y:auto}
+.lb-body::-webkit-scrollbar{width:4px}
+.lb-body::-webkit-scrollbar-thumb{background:rgba(0,255,136,.2)}
+.lb-row{
+  display:grid;grid-template-columns:72px 1fr 60px 110px;gap:12px;
+  padding:12px 30px;border-bottom:1px solid rgba(255,255,255,.025);
+  align-items:center;transition:.2s;
+}
+.lb-row:hover{background:rgba(255,255,255,.025)}
+.lb-row.r1{background:linear-gradient(90deg,rgba(255,215,0,.07),transparent)}
+.lb-row.r2{background:linear-gradient(90deg,rgba(192,192,192,.05),transparent)}
+.lb-row.r3{background:linear-gradient(90deg,rgba(205,127,50,.05),transparent)}
+.lb-rank{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:700;color:#4a5a6a;
+  display:flex;align-items:center;gap:6px}
+.lb-player{display:flex;align-items:center;gap:12px}
+.lb-av{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#1a2840,#0d1526);
+  border:2px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;color:#6a7a8a;
+}
+.r1 .lb-av{border-color:var(--gold);box-shadow:0 0 10px rgba(255,215,0,.3)}
+.r2 .lb-av{border-color:#c0c0c0}
+.r3 .lb-av{border-color:#cd7f32}
+.lb-pname{font-family:'Rajdhani',sans-serif;font-size:.92rem;font-weight:700;color:#e8f4ff}
+.lb-club{font-size:.75rem;color:#4a5a6a;margin-top:1px}
+.lb-flag{font-size:1.1rem;text-align:center}
+.lb-rating{display:flex;align-items:center;gap:8px}
+.lb-rnum{font-family:'Orbitron',sans-serif;font-size:.88rem;font-weight:700;min-width:26px}
+.r1 .lb-rnum{color:var(--gold)}
+.r2 .lb-rnum{color:#c0c0c0}
+.r3 .lb-rnum{color:#cd7f32}
+.lb-row:not(.r1):not(.r2):not(.r3) .lb-rnum{color:var(--green)}
+.rbar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.rfill{height:100%;border-radius:2px;transition:width .8s ease}
+.r1 .rfill{background:linear-gradient(90deg,var(--gold),#e6a800)}
+.r2 .rfill{background:linear-gradient(90deg,#c0c0c0,#909090)}
+.r3 .rfill{background:linear-gradient(90deg,#cd7f32,#9a5a20)}
+.lb-row:not(.r1):not(.r2):not(.r3) .rfill{background:linear-gradient(90deg,var(--green),var(--blue))}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;border-top:1px solid var(--border);
+  padding:32px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.ft-brand{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--green),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+footer p{font-size:.78rem;color:#3a4a5a}
+
+/* ── TOAST ── */
+#toasts{position:fixed;bottom:28px;right:28px;z-index:8000;display:flex;flex-direction:column;gap:10px}
+.toast{
+  display:flex;align-items:center;gap:12px;min-width:280px;max-width:400px;
+  padding:14px 18px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  animation:tIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.out{animation:tOut .3s ease forwards}
+@keyframes tIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{to{opacity:0;transform:translateX(30px)}}
+.toast.success{border-color:rgba(0,255,136,.3)}
+.toast.success .ti{color:var(--green)}
+.toast.warn{border-color:rgba(255,107,26,.3)}
+.toast.warn .ti{color:var(--orange)}
+.toast.error{border-color:rgba(255,45,85,.3)}
+.toast.error .ti{color:var(--red)}
+.toast.info{border-color:rgba(0,212,255,.3)}
+.toast.info .ti{color:var(--blue)}
+.ti{font-size:1.2rem;flex-shrink:0}
+.tt{font-family:'Orbitron',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.5px}
+.tm{font-size:.8rem;color:#6a7a8a;margin-top:2px}
+
+/* ── WARN POPUP ── */
+#warn-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:7000;
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);
+}
+#warn-overlay.show{display:flex}
+.warn-box{
+  background:var(--card);border:2px solid var(--orange);border-radius:20px;
+  padding:44px;max-width:440px;text-align:center;
+  box-shadow:0 0 60px rgba(255,107,26,.25),0 24px 60px rgba(0,0,0,.7);
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.warn-icon{font-size:3.2rem;margin-bottom:18px}
+.warn-box h2{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;
+  color:var(--orange);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.warn-box p{color:#7a8a9a;line-height:1.8;font-size:.9rem;margin-bottom:28px}
+.warn-dismiss{
+  padding:12px 36px;background:rgba(255,107,26,.15);
+  border:1px solid var(--orange);border-radius:10px;
+  color:var(--orange);font-family:'Orbitron',sans-serif;
+  font-size:.8rem;font-weight:700;letter-spacing:2px;
+  cursor:pointer;transition:.2s;
+}
+.warn-dismiss:hover{background:rgba(255,107,26,.3)}
+
+@media(max-width:768px){
+  nav{padding:0 16px}
+  .hero{padding:90px 16px 40px}
+  .section{padding:50px 16px}
+  .lb-cols,.lb-row{grid-template-columns:56px 1fr 50px}
+  .lb-cols .c-rat,.lb-row .lb-rating{display:none}
+  footer{padding:24px 16px}
+  #toasts{bottom:16px;right:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-title">DREAM LEAGUE LIVE</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+  <div class="ld-txt">INITIALIZING...</div>
+</div>
+
+<!-- BG -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">DL LIVE</div>
+  <div class="nav-links">
+    <a href="#features" class="nav-a">Features</a>
+    <a href="#leaderboard" class="nav-a">Rankings</a>
+    <a href="admin.html" class="nav-a nav-admin">⚙ Admin</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="badge-dot"></span>LIVE PLATFORM — ADMIN MONITORED</div>
+  <h1><span class="g">Dream League</span><br>Live</h1>
+  <p class="hero-sub">Admin Monitored Sessions</p>
+  <p class="hero-desc">Share your Dream League screen live. Admin monitors all sessions in real time. Start below to get your private session link.</p>
+
+  <button id="btn-share" onclick="startShare()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <path d="M8 21h8M12 17v4"/>
+    </svg>
+    Share Screen
+  </button>
+
+  <div id="session-card">
+    <div class="live-tag"><span class="live-dot"></span>LIVE SESSION ACTIVE</div>
+    <div class="sc-label">Your Private Session Link</div>
+    <div class="sc-link-row">
+      <div class="sc-link" id="sc-link-text">—</div>
+      <button id="btn-copy" onclick="copyLink()">COPY</button>
+    </div>
+    <div class="sc-warn">⚠️ &nbsp;<strong>Your screen is being shared and monitored by Admin.</strong></div>
+    <div id="sc-timer">00:00:00</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <p class="sec-eyebrow">// Platform Features</p>
+  <h2 class="sec-title">Built for <span class="g">Champions</span></h2>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon">🖥️</div><h3>Live Screen Share</h3><p>WebRTC peer-to-peer screen sharing with ultra-low latency. One click to go live.</p></div>
+    <div class="feat-card"><div class="feat-icon">👁️</div><h3>Admin Monitoring</h3><p>Admin sees all active sessions and connects to any live screen from the control panel.</p></div>
+    <div class="feat-card"><div class="feat-icon">🔗</div><h3>Private Links</h3><p>Each session gets a unique encrypted link you can share with your referee or admin.</p></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><h3>Real-Time Updates</h3><p>Socket.IO keeps the admin dashboard updated every second without any page refresh.</p></div>
+    <div class="feat-card"><div class="feat-icon">🛡️</div><h3>Full Admin Control</h3><p>Admin can warn, stop, or kick any user instantly from a powerful control panel.</p></div>
+    <div class="feat-card"><div class="feat-icon">🏆</div><h3>Player Rankings</h3><p>Live leaderboard showing the Top 50 Dream League players with ratings and clubs.</p></div>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="section" id="leaderboard">
+  <p class="sec-eyebrow">// Top Players</p>
+  <h2 class="sec-title" style="background:linear-gradient(90deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">World Rankings</h2>
+  <div class="lb-wrap">
+    <div class="lb-top">
+      <div><h2>⚽ Dream League Top 50</h2><p>Season 2024/25 — Official Ratings</p></div>
+      <div style="font-size:2.2rem">🏆</div>
+    </div>
+    <div class="lb-cols">
+      <span>Rank</span><span>Player</span><span>Nat.</span><span class="c-rat">Rating</span>
+    </div>
+    <div class="lb-body" id="lb-body">
+      <div style="padding:40px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.8rem;color:#3a4a5a">Loading...</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-brand">DREAM LEAGUE LIVE</div>
+  <p>© 2024 Dream League Live. All sessions are admin monitored.</p>
+</footer>
+
+<!-- TOAST CONTAINER -->
+<div id="toasts"></div>
+
+<!-- WARNING OVERLAY -->
+<div id="warn-overlay">
+  <div class="warn-box">
+    <div class="warn-icon">⚠️</div>
+    <h2>Admin Warning</h2>
+    <p id="warn-msg">You have received a warning from the Admin. Please follow all platform rules.</p>
+    <button class="warn-dismiss" onclick="closeWarn()">I Understand</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
